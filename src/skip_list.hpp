@@ -172,16 +172,16 @@ NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(
 
 template<class Value, class Key, int numLevels>
 SkipList<Value, Key, numLevels>::~SkipList() {
-
-    Node *cur = this->_preHead->next;
-    Node *tmp;
-
-    while (cur && cur != this->_preHead) {
-        tmp = cur;
-        delete tmp;
-        cur = cur->next;
-    }
-    delete this->_preHead;
+//
+//    Node *cur = this->_preHead->next;
+//    Node *tmp;
+//
+//    while (cur && cur != this->_preHead) {
+//        tmp = cur;
+//        delete tmp;
+//        cur = cur->next;
+//    }
+//    delete this->_preHead;
 }
 
 

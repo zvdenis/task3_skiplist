@@ -83,7 +83,7 @@ void JournalNetActivity<numLevels>::outputSuspiciousActivities(
         out << "";
         return;
     }
-    
+
     while (user->next != _journal.getPreHead() && user->next->key <= timeTo) {
         user = user->next;
         if (user->value.host == hostSuspicious)
