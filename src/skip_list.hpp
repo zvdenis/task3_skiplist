@@ -74,16 +74,22 @@ void SkipList<Value, Key, numLevels>::insert(const Value &val, const Key &key) {
 
     int level = genLevel();
     Node *insertedElement = new NodeSkipList<Value, Key, numLevels>(key, val);
+    insertedElement->levelHighest = level;
 
     NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
 
     for (int i = numLevels - 1; i >= 0; i--) {
-        while (cur->nextJump[i] != this->_preHead && key > cur->nextJump[i]->key) {
+        while (cur->nextJump[i] != this->_preHead && key >= cur->nextJump[i]->key) {
             cur = cur->nextJump[i];
         }
         if (i <= level) {
             insertedElement->nextJump[i] = cur->nextJump[i];
             cur->nextJump[i] = insertedElement;
+
+            if(i == 0){
+                insertedElement->next = cur->next;
+                cur->next = insertedElement;
+            }
         }
     }
 
@@ -104,8 +110,8 @@ int SkipList<Value, Key, numLevels>::genLevel() {
 
 template<class Value, class Key, int numLevels>
 void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore) {
-    if (nodeBefore->next == this->_preHead)throw new std::invalid_argument("tried to delete _preHead");
-
+    if (nodeBefore->next == this->_preHead)throw std::invalid_argument("");
+    if (nodeBefore == nullptr) throw std::invalid_argument("");
     NodeSkipList<Value, Key, numLevels> *deleted = nodeBefore->next;
     NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
 
@@ -117,8 +123,12 @@ void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore) {
             }
             cur = cur->nextJump[i];
         }
+        if (cur->nextJump[i] == deleted) {
+            cur->nextJump[i] = cur->nextJump[i]->nextJump[i];
+            continue;
+        }
     }
-    NodeSkipList<Value, Key, numLevels>* afterDeleted = nodeBefore->next->next;
+    NodeSkipList<Value, Key, numLevels> *afterDeleted = nodeBefore->next->next;
     nodeBefore->next->clear();
     delete nodeBefore->next;
     nodeBefore->next = afterDeleted;
@@ -143,12 +153,23 @@ NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(
     NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
 
     for (int i = numLevels - 1; i >= 0; i--) {
-        while (cur->nextJump[i] != this->_preHead && key > cur->nextJump[i]->key) {
+        while (cur->nextJump[i] != this->_preHead && key >= cur->nextJump[i]->key) {
             cur = cur->nextJump[i];
-            if (cur->nextJump[i]->key == key) return cur;
+            if (cur->key == key) return cur;
         }
     }
+
+    while (cur->next != this->_preHead && key >= cur->next->key){
+        cur = cur->next;
+        if (cur->key == key) return cur;
+    }
+
     return nullptr;
+}
+
+template<class Value, class Key, int numLevels>
+SkipList<Value, Key, numLevels>::~SkipList() {
+
 }
 
 // TODO: !!! One need to implement all declared methods !!!

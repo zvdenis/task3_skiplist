@@ -92,6 +92,9 @@ int main (int /*argc*/, char* /*argv*/[])
     for (i = 0; i < 200 * 1000; ++i)
         list.insert(i, i);
 
+
+
+
     tmr.tack("SkipList over integers creation");
 
     TypeSkipNode* node = nullptr;

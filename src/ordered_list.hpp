@@ -17,6 +17,8 @@
 //=============================================================================
 
 
+#include "ordered_list.h"
+
 template <class Value, class Key, class Node>
 OrderedList<Value, Key, Node>::OrderedList()
 {
@@ -26,8 +28,18 @@ OrderedList<Value, Key, Node>::OrderedList()
 
 //-----------------------------------------------------------------------------
 
+template<class Value, class Key, class Node>
+OrderedList<Value, Key, Node>::~OrderedList() {
+    Node* ptr = _preHead->next;
 
-    // TODO: !!! Implement destructor correctly !!!
+    while(ptr && ptr != _preHead)
+    {
+        Node* tmp = ptr->next;
+        delete ptr;
+        ptr = tmp;
+    }
+    delete _preHead;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -103,6 +115,8 @@ Node* OrderedList<Value, Key, Node>::getPreHead() const
 {
     return _preHead;
 }
+
+
 
 //-----------------------------------------------------------------------------
 
