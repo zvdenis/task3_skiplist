@@ -47,7 +47,7 @@ struct NodeSkipListAbstract
     ///  0 = nextJump[0] is enabled and contains sparse jumps
     /// (numLevels-1) is the maximal value for \a levelHighest.
     ///
-    /// Note: In industrial envirnoment I would use 0 for no \a numLevels,
+    /// Note: In industrial environment I would use 0 for no \a numLevels,
     /// but it may confuse students.
     int levelHighest;
 };

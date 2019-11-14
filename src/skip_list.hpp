@@ -12,6 +12,8 @@
 // !!! DO NOT include skip_list.h here, 'cause it leads to circular refs. !!!
 
 #include <cstdlib>
+#include "skip_list.h"
+
 
 //==============================================================================
 // class NodeSkipList
@@ -72,5 +74,25 @@ SkipList<Value, Key, numLevels>::SkipList(double probability)
     Base::_preHead->levelHighest = numLevels - 1;
 }
 
+template<class Value, class Key, int numLevels>
+void SkipList<Value, Key, numLevels>::insert(const Value &val, const Key &key) {
+    NodeSkipList<Value, Key, numLevels>* cur = this->_preHead;
 
-    // TODO: !!! One need to implement all declared methods !!!
+}
+
+template<class Value, class Key, int numLevels>
+void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore) {
+
+}
+
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value,Key, numLevels> *SkipList<Value, Key, numLevels>::findLastLessThan(const Key &key) const {
+
+}
+
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value,Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(const Key &key) const {
+
+}
+
+// TODO: !!! One need to implement all declared methods !!!
