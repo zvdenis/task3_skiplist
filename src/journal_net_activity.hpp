@@ -75,7 +75,6 @@ void JournalNetActivity<numLevels>::outputSuspiciousActivities(
         const TimeStamp &timeTo,
         std::ostream &out) const {
 
-
     if (timeFrom > timeTo) throw std::invalid_argument("Wrong format!");
 
     NodeSkipList<NetActivity, TimeStamp, numLevels> *user = _journal.findLastLessThan(timeFrom);
@@ -84,12 +83,10 @@ void JournalNetActivity<numLevels>::outputSuspiciousActivities(
         out << "";
         return;
     }
-
-
+    
     while (user->next != _journal.getPreHead() && user->next->key <= timeTo) {
         user = user->next;
         if (user->value.host == hostSuspicious)
             out << user->key << " " + user->value.user + " " + user->value.host << std::endl;
     }
-
 }
