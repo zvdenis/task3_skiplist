@@ -60,6 +60,7 @@ NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key &tkey, const Value &
 
 template<class Value, class Key, int numLevels>
 SkipList<Value, Key, numLevels>::SkipList(double probability) {
+
     _probability = probability;
 
     // Lets use m_pPreHead as a final sentinel element
@@ -86,7 +87,7 @@ void SkipList<Value, Key, numLevels>::insert(const Value &val, const Key &key) {
             insertedElement->nextJump[i] = cur->nextJump[i];
             cur->nextJump[i] = insertedElement;
 
-            if(i == 0){
+            if (i == 0) {
                 insertedElement->next = cur->next;
                 cur->next = insertedElement;
             }
@@ -110,8 +111,10 @@ int SkipList<Value, Key, numLevels>::genLevel() {
 
 template<class Value, class Key, int numLevels>
 void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore) {
-    if (nodeBefore->next == this->_preHead)throw std::invalid_argument("");
+
     if (nodeBefore == nullptr) throw std::invalid_argument("");
+    if (nodeBefore->next == this->_preHead)throw std::invalid_argument("");
+
     NodeSkipList<Value, Key, numLevels> *deleted = nodeBefore->next;
     NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
 
@@ -159,7 +162,7 @@ NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(
         }
     }
 
-    while (cur->next != this->_preHead && key >= cur->next->key){
+    while (cur->next != this->_preHead && key >= cur->next->key) {
         cur = cur->next;
         if (cur->key == key) return cur;
     }
@@ -170,6 +173,15 @@ NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(
 template<class Value, class Key, int numLevels>
 SkipList<Value, Key, numLevels>::~SkipList() {
 
+    Node *cur = this->_preHead->next;
+    Node *tmp;
+
+    while (cur && cur != this->_preHead) {
+        tmp = cur;
+        delete tmp;
+        cur = cur->next;
+    }
+    delete this->_preHead;
 }
 
-// TODO: !!! One need to implement all declared methods !!!
+
