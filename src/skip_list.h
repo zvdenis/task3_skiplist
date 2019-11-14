@@ -77,7 +77,7 @@ public:
     /// Init with a key and a value.
     NodeSkipList(const Key& tkey, const Value& val);
 
-protected:
+public:
     /// Clears all next links - dense and sparse levels and other fields.
     void clear();
 };
@@ -126,6 +126,8 @@ public:
     ///
     /// Continue to think hard about sparse levels.
     /// Check different cases.
+    int genLevel();
+
     virtual void removeNext(Node* nodeBefore);
 
     /// \brief Find the last element with key strictly less than key.
