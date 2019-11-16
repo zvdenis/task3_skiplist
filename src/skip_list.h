@@ -47,7 +47,7 @@ struct NodeSkipListAbstract
     ///  0 = nextJump[0] is enabled and contains sparse jumps
     /// (numLevels-1) is the maximal value for \a levelHighest.
     ///
-    /// Note: In industrial envirnoment I would use 0 for no \a numLevels,
+    /// Note: In industrial environment I would use 0 for no \a numLevels,
     /// but it may confuse students.
     int levelHighest;
 };
@@ -77,7 +77,7 @@ public:
     /// Init with a key and a value.
     NodeSkipList(const Key& tkey, const Value& val);
 
-protected:
+public:
     /// Clears all next links - dense and sparse levels and other fields.
     void clear();
 };
@@ -126,6 +126,8 @@ public:
     ///
     /// Continue to think hard about sparse levels.
     /// Check different cases.
+    int genLevel();
+
     virtual void removeNext(Node* nodeBefore);
 
     /// \brief Find the last element with key strictly less than key.

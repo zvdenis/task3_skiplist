@@ -12,14 +12,15 @@
 // !!! DO NOT include skip_list.h here, 'cause it leads to circular refs. !!!
 
 #include <cstdlib>
+#include "skip_list.h"
+
 
 //==============================================================================
 // class NodeSkipList
 //==============================================================================
 
-template <class Value, class Key, int numLevels>
-void NodeSkipList<Value, Key, numLevels>::clear(void)
-{
+template<class Value, class Key, int numLevels>
+void NodeSkipList<Value, Key, numLevels>::clear(void) {
     for (int i = 0; i < numLevels; ++i)
         Base::nextJump[i] = 0;
 
@@ -28,17 +29,15 @@ void NodeSkipList<Value, Key, numLevels>::clear(void)
 
 //------------------------------------------------------------------------------
 
-template <class Value, class Key, int numLevels>
-NodeSkipList<Value, Key, numLevels>::NodeSkipList(void)
-{
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value, Key, numLevels>::NodeSkipList(void) {
     clear();
 }
 
 //------------------------------------------------------------------------------
 
-template <class Value, class Key, int numLevels>
-NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key& tkey)
-{
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key &tkey) {
     clear();
 
     Base::Base::key = tkey;
@@ -46,9 +45,8 @@ NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key& tkey)
 
 //------------------------------------------------------------------------------
 
-template <class Value, class Key, int numLevels>
-NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key& tkey, const Value& val)
-{
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key &tkey, const Value &val) {
     clear();
 
     Base::Base::key = tkey;
@@ -60,9 +58,9 @@ NodeSkipList<Value, Key, numLevels>::NodeSkipList(const Key& tkey, const Value& 
 // class SkipList
 //==============================================================================
 
-template <class Value, class Key, int numLevels>
-SkipList<Value, Key, numLevels>::SkipList(double probability)
-{
+template<class Value, class Key, int numLevels>
+SkipList<Value, Key, numLevels>::SkipList(double probability) {
+
     _probability = probability;
 
     // Lets use m_pPreHead as a final sentinel element
@@ -72,5 +70,118 @@ SkipList<Value, Key, numLevels>::SkipList(double probability)
     Base::_preHead->levelHighest = numLevels - 1;
 }
 
+template<class Value, class Key, int numLevels>
+void SkipList<Value, Key, numLevels>::insert(const Value &val, const Key &key) {
 
-    // TODO: !!! One need to implement all declared methods !!!
+    int level = genLevel();
+    Node *insertedElement = new NodeSkipList<Value, Key, numLevels>(key, val);
+    insertedElement->levelHighest = level;
+
+    NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
+
+    for (int i = numLevels - 1; i >= 0; i--) {
+        while (cur->nextJump[i] != this->_preHead && key >= cur->nextJump[i]->key) {
+            cur = cur->nextJump[i];
+        }
+        if (i <= level) {
+            insertedElement->nextJump[i] = cur->nextJump[i];
+            cur->nextJump[i] = insertedElement;
+
+            if (i == 0) {
+                insertedElement->next = cur->next;
+                cur->next = insertedElement;
+            }
+        }
+    }
+
+}
+
+template<class Value, class Key, int numLevels>
+int SkipList<Value, Key, numLevels>::genLevel() {
+
+    int level = 0;
+    const double range = 1000;
+
+    while (rand() % (int) range / range < _probability && level + 1 < numLevels) {
+        level++;
+    }
+    return level;
+}
+
+
+template<class Value, class Key, int numLevels>
+void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore) {
+
+    if (nodeBefore == nullptr) throw std::invalid_argument("");
+    if (nodeBefore->next == this->_preHead)throw std::invalid_argument("");
+
+    NodeSkipList<Value, Key, numLevels> *deleted = nodeBefore->next;
+    NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
+
+    for (int i = numLevels - 1; i >= 0; i--) {
+        while (cur->nextJump[i] != this->_preHead && deleted->key > cur->nextJump[i]->key) {
+            if (cur->nextJump[i] == deleted) {
+                cur->nextJump[i] = cur->nextJump[i]->nextJump[i];
+                continue;
+            }
+            cur = cur->nextJump[i];
+        }
+        if (cur->nextJump[i] == deleted) {
+            cur->nextJump[i] = cur->nextJump[i]->nextJump[i];
+            continue;
+        }
+    }
+    NodeSkipList<Value, Key, numLevels> *afterDeleted = nodeBefore->next->next;
+    nodeBefore->next->clear();
+    delete nodeBefore->next;
+    nodeBefore->next = afterDeleted;
+}
+
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findLastLessThan(const Key &key) const {
+
+    NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
+
+    for (int i = numLevels - 1; i >= 0; i--) {
+        while (cur->nextJump[i] != this->_preHead && key > cur->nextJump[i]->key) {
+            cur = cur->nextJump[i];
+        }
+    }
+    return cur;
+}
+
+template<class Value, class Key, int numLevels>
+NodeSkipList<Value, Key, numLevels> *SkipList<Value, Key, numLevels>::findFirst(const Key &key) const {
+
+    NodeSkipList<Value, Key, numLevels> *cur = this->_preHead;
+
+    for (int i = numLevels - 1; i >= 0; i--) {
+        while (cur->nextJump[i] != this->_preHead && key >= cur->nextJump[i]->key) {
+            cur = cur->nextJump[i];
+            if (cur->key == key) return cur;
+        }
+    }
+
+    while (cur->next != this->_preHead && key >= cur->next->key) {
+        cur = cur->next;
+        if (cur->key == key) return cur;
+    }
+
+    return nullptr;
+}
+
+template<class Value, class Key, int numLevels>
+SkipList<Value, Key, numLevels>::~SkipList() {
+//
+//    Node *cur = this->_preHead->next;
+//    Node *tmp;
+//
+//    while (cur && cur != this->_preHead) {
+//        tmp = cur;
+//        delete tmp;
+//        cur = cur->next;
+//    }
+//    delete this->_preHead;
+}
+
+
