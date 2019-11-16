@@ -30,16 +30,16 @@ OrderedList<Value, Key, Node>::OrderedList()
 
 template<class Value, class Key, class Node>
 OrderedList<Value, Key, Node>::~OrderedList() {
-    Node* cur = _preHead->next;
-    Node* tmp;
-
-    while(cur && cur != _preHead)
-    {
-        tmp = cur;
-        delete tmp;
-        cur = cur->next;
-    }
-    delete _preHead;
+//    Node* cur = _preHead->next;
+//    Node* tmp;
+//
+//    while(cur && cur != _preHead)
+//    {
+//        tmp = cur;
+//        delete tmp;
+//        cur = cur->next;
+//    }
+//    delete _preHead;
 }
 
 //-----------------------------------------------------------------------------
